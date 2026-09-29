@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "settings": {
+    "timeoutMs": 5000,
+    "maxBodyBytes": 65536,
+    "concurrency": 8
+  },
+  "targets": [
+    {
+      "name": "API de exemplo",
+      "url": "https://httpbin.org/status/200",
+      "method": "GET",
+      "expectedStatus": 200,
+      "maxLatencyMs": 1500
+    },
+    {
+      "name": "Endpoint de conteúdo",
+      "url": "https://httpbin.org/json",
+      "method": "GET",
+      "expectedStatus": [200, 204],
+      "maxLatencyMs": 2000,
+      "contains": "slideshow"
+    }
+  ]
+}

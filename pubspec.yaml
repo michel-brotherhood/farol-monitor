@@ -1,0 +1,19 @@
+name: farol_cli
+description: Monitor local e privacy-first para disponibilidade e latência de sites e APIs.
+version: 0.1.0
+publish_to: none
+repository: https://github.com/michel-brotherhood/farol-monitor
+homepage: https://github.com/michel-brotherhood/farol-monitor
+issue_tracker: https://github.com/michel-brotherhood/farol-monitor/issues
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies: {}
+
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.32.0
+
+executables:
+  farol:

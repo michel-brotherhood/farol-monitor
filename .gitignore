@@ -1,0 +1,16 @@
+.dart_tool/
+.packages
+build/
+coverage/
+.pub-cache/
+.pub/
+.farol/
+*.log
+.DS_Store
+Thumbs.db
+/farol.json
+/farol.local.json
+/farol.*.local.json
+.env
+.env.*
+!.env.example

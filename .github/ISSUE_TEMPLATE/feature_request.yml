@@ -1,0 +1,26 @@
+name: Sugerir melhoria
+description: Proponha uma capacidade útil e bem delimitada.
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema
+      description: Que necessidade esta proposta resolve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução sugerida
+      description: Explique o fluxo e o comportamento esperado.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacidade
+      options:
+        - label: A proposta não exige transmitir dados monitorados a um serviço externo.
+          required: true

@@ -1,0 +1,35 @@
+name: Relatar um problema
+description: Informe um defeito reproduzível no Farol.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Não inclua URLs privadas, tokens, cabeçalhos ou dados de clientes.
+  - type: textarea
+    id: behavior
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o comportamento observado.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: O que esperava acontecer?
+    validations:
+      required: true
+  - type: input
+    id: dart-version
+    attributes:
+      label: Versão do Dart
+      placeholder: dart --version
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passos para reproduzir
+      description: Use um endpoint público ou um servidor local de teste.
+    validations:
+      required: true
