@@ -9,7 +9,11 @@ class HistoryStore {
 
   Future<void> append(ProbeRun run) async {
     await file.parent.create(recursive: true);
-    await file.writeAsString('${run.toJsonLine()}\n', mode: FileMode.append, flush: true);
+    await file.writeAsString(
+      '${run.toJsonLine()}\n',
+      mode: FileMode.append,
+      flush: true,
+    );
   }
 
   Future<List<Map<String, dynamic>>> readRuns({int limit = 20}) async {

@@ -55,7 +55,9 @@ void main() {
   });
 
   test('marca indisponível quando o conteúdo esperado não aparece', () async {
-    final result = await const HttpProbe().run(_target('/ready', contains: 'database connected'));
+    final result = await const HttpProbe().run(
+      _target('/ready', contains: 'database connected'),
+    );
 
     expect(result.status, HealthStatus.down);
     expect(result.contentMatched, isFalse);
@@ -63,14 +65,14 @@ void main() {
 }
 
 ProbeTarget _target(String path, {String? contains}) => ProbeTarget(
-      name: path,
-      uri: Uri(scheme: 'http', host: '127.0.0.1', port: serverPort, path: path),
-      method: 'GET',
-      expectedStatuses: const {HttpStatus.ok},
-      timeoutMs: 2000,
-      maxBodyBytes: 4096,
-      contains: contains,
-    );
+  name: path,
+  uri: Uri(scheme: 'http', host: '127.0.0.1', port: serverPort, path: path),
+  method: 'GET',
+  expectedStatuses: const {HttpStatus.ok},
+  timeoutMs: 2000,
+  maxBodyBytes: 4096,
+  contains: contains,
+);
 
 int get serverPort => _activeServer!.port;
 HttpServer? _activeServer;

@@ -61,17 +61,17 @@ class ProbeResult {
   }
 
   Map<String, Object?> toJson() => {
-        'name': targetName,
-        'host': host,
-        'checkedAt': checkedAt.toUtc().toIso8601String(),
-        'status': status.name,
-        'latencyMs': latencyMs,
-        'statusCode': statusCode,
-        'expectedStatus': expectedStatus,
-        'contentMatched': contentMatched,
-        'maxLatencyMs': maxLatencyMs,
-        'error': error,
-      };
+    'name': targetName,
+    'host': host,
+    'checkedAt': checkedAt.toUtc().toIso8601String(),
+    'status': status.name,
+    'latencyMs': latencyMs,
+    'statusCode': statusCode,
+    'expectedStatus': expectedStatus,
+    'contentMatched': contentMatched,
+    'maxLatencyMs': maxLatencyMs,
+    'error': error,
+  };
 
   factory ProbeResult.fromJson(Map<String, dynamic> json) {
     return ProbeResult(
@@ -94,38 +94,41 @@ class ProbeRun {
   final DateTime startedAt;
   final List<ProbeResult> results;
 
-  bool get isHealthy => results.every((result) => result.status == HealthStatus.healthy);
+  bool get isHealthy =>
+      results.every((result) => result.status == HealthStatus.healthy);
 
   Map<String, Object?> toJson() => {
-        'startedAt': startedAt.toUtc().toIso8601String(),
-        'summary': {
-          'total': results.length,
-          'healthy': results.where((r) => r.status == HealthStatus.healthy).length,
-          'degraded': results.where((r) => r.status == HealthStatus.degraded).length,
-          'down': results.where((r) => r.status == HealthStatus.down).length,
-        },
-        'results': results.map((result) => result.toJson()).toList(),
-      };
+    'startedAt': startedAt.toUtc().toIso8601String(),
+    'summary': {
+      'total': results.length,
+      'healthy': results.where((r) => r.status == HealthStatus.healthy).length,
+      'degraded': results
+          .where((r) => r.status == HealthStatus.degraded)
+          .length,
+      'down': results.where((r) => r.status == HealthStatus.down).length,
+    },
+    'results': results.map((result) => result.toJson()).toList(),
+  };
 
   String toJsonLine() => jsonEncode(toJson());
 }
 
 String statusLabel(HealthStatus status) => switch (status) {
-      HealthStatus.healthy => 'OK',
-      HealthStatus.degraded => 'LENTO',
-      HealthStatus.down => 'INDISPONÍVEL',
-    };
+  HealthStatus.healthy => 'OK',
+  HealthStatus.degraded => 'LENTO',
+  HealthStatus.down => 'INDISPONÍVEL',
+};
 
 String statusIcon(HealthStatus status) => switch (status) {
-      HealthStatus.healthy => '✓',
-      HealthStatus.degraded => '!',
-      HealthStatus.down => '×',
-    };
+  HealthStatus.healthy => '✓',
+  HealthStatus.degraded => '!',
+  HealthStatus.down => '×',
+};
 
 String errorLabel(Object error) => switch (error) {
-      SocketException() => 'Falha de conexão',
-      HandshakeException() => 'Falha na negociação TLS',
-      HttpException() => 'Falha na resposta HTTP',
-      FormatException() => 'Resposta inválida',
-      _ => 'Falha ${error.runtimeType}',
-    };
+  SocketException() => 'Falha de conexão',
+  HandshakeException() => 'Falha na negociação TLS',
+  HttpException() => 'Falha na resposta HTTP',
+  FormatException() => 'Resposta inválida',
+  _ => 'Falha ${error.runtimeType}',
+};

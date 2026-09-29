@@ -59,31 +59,48 @@ class FarolCli {
   Future<int> _watch(Map<String, String?> options) async {
     _ensureAllowed(options, const {'config', 'interval', 'no-history'});
     final config = _loadConfig(options['config']);
-    final intervalSeconds = _parseBounded(options['interval'] ?? '30', '--interval', 1, 86400);
+    final intervalSeconds = _parseBounded(
+      options['interval'] ?? '30',
+      '--interval',
+      1,
+      86400,
+    );
     final previousStates = <String, HealthStatus>{};
     final stop = Completer<void>();
     final signal = ProcessSignal.sigint.watch().listen((_) {
       if (!stop.isCompleted) stop.complete();
     });
     var runNumber = 0;
-    stdout.writeln('Farol em monitoramento. Ctrl+C encerra. Intervalo: ${intervalSeconds}s.');
+    stdout.writeln(
+      'Farol em monitoramento. Ctrl+C encerra. Intervalo: ${intervalSeconds}s.',
+    );
     try {
       while (!stop.isCompleted) {
         runNumber++;
         final run = await const ProbeRunner().run(config);
-        if (!_isEnabled(options, 'no-history')) await _historyStore().append(run);
+        if (!_isEnabled(options, 'no-history'))
+          await _historyStore().append(run);
         final currentNames = <String>{};
         for (final result in run.results) {
           currentNames.add(result.targetName);
-          if (previousStates[result.targetName] != result.status || runNumber == 1) {
-            stdout.writeln('${statusIcon(result.status)} ${result.targetName} · ${statusLabel(result.status)} · ${result.latencyMs} ms${result.error == null ? '' : ' · ${result.error}'}');
+          if (previousStates[result.targetName] != result.status ||
+              runNumber == 1) {
+            stdout.writeln(
+              '${statusIcon(result.status)} ${result.targetName} · ${statusLabel(result.status)} · ${result.latencyMs} ms${result.error == null ? '' : ' · ${result.error}'}',
+            );
           }
           previousStates[result.targetName] = result.status;
         }
         previousStates.removeWhere((name, _) => !currentNames.contains(name));
-        final down = run.results.where((result) => result.status == HealthStatus.down).length;
-        final degraded = run.results.where((result) => result.status == HealthStatus.degraded).length;
-        stdout.writeln('Ciclo $runNumber · ${run.startedAt.toLocal().toIso8601String()} · $down indisponíveis · $degraded lentos');
+        final down = run.results
+            .where((result) => result.status == HealthStatus.down)
+            .length;
+        final degraded = run.results
+            .where((result) => result.status == HealthStatus.degraded)
+            .length;
+        stdout.writeln(
+          'Ciclo $runNumber · ${run.startedAt.toLocal().toIso8601String()} · $down indisponíveis · $degraded lentos',
+        );
         if (!stop.isCompleted) {
           await Future.any<void>([
             Future<void>.delayed(Duration(seconds: intervalSeconds)),
@@ -117,20 +134,34 @@ class FarolCli {
   int _parseBounded(String value, String option, int minimum, int maximum) {
     final parsed = int.tryParse(value);
     if (parsed == null || parsed < minimum || parsed > maximum) {
-      throw FormatException('$option deve ser um inteiro entre $minimum e $maximum.');
+      throw FormatException(
+        '$option deve ser um inteiro entre $minimum e $maximum.',
+      );
     }
     return parsed;
   }
 
-  bool _isEnabled(Map<String, String?> options, String option) => options.containsKey(option);
+  bool _isEnabled(Map<String, String?> options, String option) =>
+      options.containsKey(option);
 
   void _ensureAllowed(Map<String, String?> options, Set<String> allowed) {
-    final unknown = options.keys.where((key) => !allowed.contains(key)).toList();
-    if (unknown.isNotEmpty) throw FormatException('Opção(ões) não reconhecida(s): ${unknown.map((v) => '--$v').join(', ')}.');
+    final unknown = options.keys
+        .where((key) => !allowed.contains(key))
+        .toList();
+    if (unknown.isNotEmpty)
+      throw FormatException(
+        'Opção(ões) não reconhecida(s): ${unknown.map((v) => '--$v').join(', ')}.',
+      );
   }
 
   Map<String, String?> _parseOptions(List<String> args) {
-    const aliases = {'-c': 'config', '-f': 'format', '-i': 'interval', '-p': 'path', '-n': 'limit'};
+    const aliases = {
+      '-c': 'config',
+      '-f': 'format',
+      '-i': 'interval',
+      '-p': 'path',
+      '-n': 'limit',
+    };
     const valueOptions = {'config', 'format', 'interval', 'path', 'limit'};
     final options = <String, String?>{};
     for (var index = 0; index < args.length; index++) {
@@ -139,7 +170,9 @@ class FarolCli {
         options['no-history'] = null;
         continue;
       }
-      final optionName = aliases[token] ?? (token.startsWith('--') ? token.substring(2) : null);
+      final optionName =
+          aliases[token] ??
+          (token.startsWith('--') ? token.substring(2) : null);
       if (optionName == null || optionName.isEmpty) {
         throw FormatException('Argumento inesperado: $token.');
       }
@@ -149,7 +182,8 @@ class FarolCli {
       if (index + 1 >= args.length || args[index + 1].startsWith('-')) {
         throw FormatException('Falta o valor de $token.');
       }
-      if (options.containsKey(optionName)) throw FormatException('$token foi informado mais de uma vez.');
+      if (options.containsKey(optionName))
+        throw FormatException('$token foi informado mais de uma vez.');
       options[optionName] = args[++index];
     }
     return options;

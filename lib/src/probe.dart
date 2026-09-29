@@ -17,12 +17,15 @@ class HttpProbe {
       final timeout = Duration(milliseconds: target.timeoutMs);
       Duration remaining() {
         final milliseconds = target.timeoutMs - stopwatch.elapsedMilliseconds;
-        if (milliseconds <= 0) throw TimeoutException('Request deadline exceeded.');
+        if (milliseconds <= 0)
+          throw TimeoutException('Request deadline exceeded.');
         return Duration(milliseconds: milliseconds);
       }
 
       client = HttpClient()..connectionTimeout = timeout;
-      final request = await client.openUrl(target.method, target.uri).timeout(remaining());
+      final request = await client
+          .openUrl(target.method, target.uri)
+          .timeout(remaining());
       request
         ..followRedirects = true
         ..maxRedirects = 5
@@ -33,8 +36,12 @@ class HttpProbe {
           ? null
           : await _readBody(response, target.maxBodyBytes).timeout(remaining());
       stopwatch.stop();
-      final statusExpected = target.expectedStatuses.contains(response.statusCode);
-      final contentMatched = target.contains == null ? null : body!.contains(target.contains!);
+      final statusExpected = target.expectedStatuses.contains(
+        response.statusCode,
+      );
+      final contentMatched = target.contains == null
+          ? null
+          : body!.contains(target.contains!);
       return ProbeResult(
         targetName: target.name,
         host: target.host,
@@ -47,10 +54,20 @@ class HttpProbe {
       );
     } on TimeoutException {
       stopwatch.stop();
-      return _failure(target, checkedAt, stopwatch.elapsedMilliseconds, 'Tempo limite excedido (${target.timeoutMs} ms).');
+      return _failure(
+        target,
+        checkedAt,
+        stopwatch.elapsedMilliseconds,
+        'Tempo limite excedido (${target.timeoutMs} ms).',
+      );
     } on Exception catch (error) {
       stopwatch.stop();
-      return _failure(target, checkedAt, stopwatch.elapsedMilliseconds, errorLabel(error));
+      return _failure(
+        target,
+        checkedAt,
+        stopwatch.elapsedMilliseconds,
+        errorLabel(error),
+      );
     } finally {
       client?.close(force: true);
     }
@@ -69,15 +86,20 @@ class HttpProbe {
     return utf8.decode(bytes, allowMalformed: true);
   }
 
-  ProbeResult _failure(ProbeTarget target, DateTime checkedAt, int latencyMs, String message) => ProbeResult(
-        targetName: target.name,
-        host: target.host,
-        checkedAt: checkedAt,
-        latencyMs: latencyMs,
-        statusCode: null,
-        expectedStatus: false,
-        contentMatched: target.contains == null ? null : false,
-        maxLatencyMs: target.maxLatencyMs,
-        error: message,
-      );
+  ProbeResult _failure(
+    ProbeTarget target,
+    DateTime checkedAt,
+    int latencyMs,
+    String message,
+  ) => ProbeResult(
+    targetName: target.name,
+    host: target.host,
+    checkedAt: checkedAt,
+    latencyMs: latencyMs,
+    statusCode: null,
+    expectedStatus: false,
+    contentMatched: target.contains == null ? null : false,
+    maxLatencyMs: target.maxLatencyMs,
+    error: message,
+  );
 }

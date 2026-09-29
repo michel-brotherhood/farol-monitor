@@ -24,9 +24,6 @@ class ProbeRunner {
 
     final workerCount = math.min(config.concurrency, config.targets.length);
     await Future.wait(List.generate(workerCount, (_) => worker()));
-    return ProbeRun(
-      startedAt: startedAt,
-      results: results.cast<ProbeResult>(),
-    );
+    return ProbeRun(startedAt: startedAt, results: results.cast<ProbeResult>());
   }
 }
